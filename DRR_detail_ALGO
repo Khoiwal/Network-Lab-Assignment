@@ -1,0 +1,103 @@
+4.2 Algorithm
+RREQ initiation
+• Initiated by the source node which wish to send data and do not have
+path in its routing table.
+• create the RREQ packet and broadcast after starting the timer
+• If timer timed out then try for maximum K times by re-initiating
+RREQ.
+• if timed out for K times then show error and drop all the packets from
+the queue corresponding to that destination.
+RREQ processing
+When RREQ packet is received by some other nodes then follow these steps.
+IF UID already processed (check by comparing it with elements in processed
+list)
+THEN skip
+4.2 Algorithm 16
+node through path and with new UID
+ELSE append current IP to path and rebroadcast the packet.
+RREP initiation
+• Initiated by a node when either path to destination is found in the
+routing table or when a node itself is destination for which RREQ was
+intended.
+• create the RREP packet with path taken from RREQ packet and unicast
+according to the path in the RREP packet.
+RREP processing
+when RREP packet is received by the node in the network follow these steps.
+FOR each node that appear to the left of the current node in the path field
+of RREP packet
+make an entry in routing table for that node with predecessor node in
+path field of RREP being the next hop in routing table .
+FOR each node that appear to the right of the current node in the path field
+of RREP packet
+make an entry in routing table for that node with successor node in path
+field of RREP being the next hop in routing table .
+IF Current node is not equal to destination node in RREP(i.e. original
+source which initiated RREQ).
+THEN send the RREP packet to the previous node in the path.
+ELSE
+stop the timer.
+initiate data transmission process.
+
+4.2 Algorithm 17
+DATA initiation
+When user gives a data send request follow the steps.
+IF path to destination is available in routing table.
+THEN
+Store the data packet in the queue corresponding to the destination.
+Start the timer for (UACK).
+Send packet to the node found in the routing table to the destination.
+IF UACK is received
+THEN drop the copy of the packet from the queue.
+ELSE IF timer is timed out
+THEN
+IF Number of time out is equal to K
+THEN initiate RREQ
+ELSE
+restart DATA initiation.
+IF MACK is received.
+THEN simply discard.
+ELSE
+initiate RREQ.
+DATA processing
+When a intermediate node receives a data packet follow these steps.
+Send MACK to the node from which DATA packet arrived.
+IF Packet received for the first time.
+THEN
+IF Current node is the destination node.
+THEN
+Consume packet.
+Send UACK.
+ELSE
+Start the timer (MACK).
+Forward the data to the next node towards the destination.
+
+
+4.2 Algorithm 18
+IF MACK is received
+THEN drop the copy of the packet from the queue.
+ELSE IF timer is timed out
+THEN
+IF Number of time out is equal to K
+THEN
+Send RERR to original source.
+Remove entry for route to destination from the routing table.
+Send RREQ for destination, for sending the data.
+ELSE
+Restart the timer and resend the packet.
+ELSE
+Discard Packet.
+RERR initiation
+RERR is initiated when a link fails or a node fails, so the node which is
+sending data will have time out and subsequently RERR packet will be send
+to sender of data packet.
+RERR processing
+RERR processing will be done by intermediate node who receives RERR
+packet. Upon receiving RERR packet follow the steps.
+• From the Routing table of the node, remove all those entries where
+next node entry in the routing table is equal to the successor of the
+current node in the path field of the RERR packet.
+• Add the entries in the routing table for all the nodes that are successor
+of the current node in the path field of the RERR packet.
+• IF current node is not equal to destination node THEN prepend the
+node IP address and send the packet towards the destination ELSE
+do not forward RERR.
